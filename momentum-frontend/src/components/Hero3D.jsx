@@ -4,6 +4,7 @@ import Spline from '@splinetool/react-spline';
 
 // 🚀 Grounded, everyday productivity quotes
 const quotes = [
+  "Small steps lead to big achievements.",
   "Small habits build big results.",
   "Focus on the step in front of you.",
   "Consistency over intensity.",
