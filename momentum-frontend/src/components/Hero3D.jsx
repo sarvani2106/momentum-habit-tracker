@@ -1,73 +1,53 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 import Spline from '@splinetool/react-spline';
 
-// 🚀 Grounded, everyday productivity quotes
-const quotes = [
-  "Small steps lead to big achievements.",
-  "Small habits build big results.",
-  "Focus on the step in front of you.",
-  "Consistency over intensity.",
-  "Great work today. Keep showing up.",
-  "Every checkmark is a step forward."
-];
-
-const Hero3D = ({ username }) => {
-  const [index, setIndex] = useState(0);
-
-  // Cycle through quotes every 4 seconds
-  useEffect(() => {
-    const timer = setInterval(() => setIndex(prev => (prev + 1) % quotes.length), 4000);
-    return () => clearInterval(timer);
-  }, []);
-
+export default function Hero3D({ username }) {
   return (
-    // Clean, deep blue glassmorphism wrapper
-    <div className="relative bg-slate-900/80 dark:bg-[#080d1a] text-white p-8 rounded-3xl shadow-2xl overflow-hidden mb-8 border border-blue-500/20 backdrop-blur-xl min-h-[350px] flex flex-col md:flex-row items-center">
+    <div className="relative w-full rounded-[2.5rem] bg-white/40 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 backdrop-blur-3xl overflow-hidden shadow-sm">
       
-      {/* Text Content - Left Side */}
-      <div className="relative z-10 flex flex-col items-start text-left flex-1 space-y-4 pointer-events-none">
-        <motion.div 
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ type: "spring", bounce: 0.4, duration: 1 }}
-        >
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-            Momentum
+      {/* --- Ambient Background Glows --- */}
+      <div className="absolute -top-32 -left-32 w-[30rem] h-[30rem] bg-blue-500/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-[30rem] h-[30rem] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between p-8 md:p-12 gap-10">
+        
+        {/* --- Left Side: Premium Typography --- */}
+        <div className="flex-1 space-y-6 text-center md:text-left z-10">
+          
+          {/* Sleek Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
+            <span className="text-xs font-bold tracking-widest text-blue-600 dark:text-blue-400 uppercase">
+              Momentum
+            </span>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-[1.1]">
+            Welcome back,<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-400">
+              {username || 'Hacker'}.
+            </span>
           </h1>
-        </motion.div>
-
-        <motion.p 
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          className="text-slate-300 font-medium text-lg"
-        >
-          Welcome back, <span className="text-white font-bold">{username}</span>.<br/>Let's keep the momentum going.
-        </motion.p>
-
-        {/* Animated Quote Rotator */}
-        <div className="h-8 overflow-hidden relative w-full flex justify-start mt-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={index}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute text-md font-semibold text-blue-300 tracking-wide"
-            >
-              {quotes[index]}
-            </motion.div>
-          </AnimatePresence>
+          
+          <p className="text-lg text-neutral-500 dark:text-neutral-400 max-w-md mx-auto md:mx-0 font-medium leading-relaxed">
+            Every checkmark is a step forward. Let's keep the momentum going today.
+          </p>
         </div>
-      </div>
 
-      {/* 💻 3D Interactive Scene - Right Side */}
-      <div className="w-full md:w-1/2 h-[300px] md:h-[400px] absolute right-0 bottom-0 md:relative z-0 cursor-grab active:cursor-grabbing">
-         {/* This renders a 3D modern computer setup you can drag and spin! */}
-          <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+        {/* --- Right Side: 3D Canvas Container --- */}
+        {/* We wrap the Spline in a soft, masked container so its background blends smoothly */}
+        <div className="w-full md:w-[450px] h-[350px] relative rounded-[2rem] overflow-hidden bg-black/5 dark:bg-black/20 border border-black/5 dark:border-white/5 shadow-inner">
+          
+          {/* ⚠️ PASTE YOUR SPLINE URL HERE ⚠️ */}
+          {/* A working interactive 3D shape from the Spline community */}
+<Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+          
+        </div>
+
       </div>
     </div>
   );
-};
-
-export default Hero3D;
+}
