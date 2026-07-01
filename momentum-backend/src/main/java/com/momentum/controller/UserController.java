@@ -1,9 +1,11 @@
 package com.momentum.controller;
-import java.util.List;
 
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,37 +16,34 @@ import com.momentum.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*") // Allows your frontend to talk to this backend
-
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
-private final UserRepository userRepository;
 
-public UserController(UserRepository userRepository) {
-    this.userRepository = userRepository;
-}
-    // 1. GET ALL USERS (To test if our database works)
-    // URL: http://localhost:8080/api/users
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email is already in use");
+        }
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
     }
 
-    // 2. CREATE A NEW USER (Registration)
-    // URL: http://localhost:8080/api/users/register
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User newUser) {
-        // Check if username already exists
-        if (userRepository.existsByUsername(newUser.getUsername())) {
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
-        }
-        
-        // Check if email already exists
-        if (userRepository.existsByEmail(newUser.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
-        }
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
 
-        // Save the new user to the database
-        User savedUser = userRepository.save(newUser);
-        return ResponseEntity.ok(savedUser);
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (user.getPassword().equals(password)) {
+                return ResponseEntity.ok(user);
+            }
+        }
+        return ResponseEntity.status(401).body("Invalid email or password");
     }
 }
