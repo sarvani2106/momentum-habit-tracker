@@ -1,8 +1,16 @@
-FROM eclipse-temurin:21-jdk-jammy
+# Step 1: Build the application jar
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 RUN chmod +x mvnw
-RUN ./mvnw dependency:resolve
+RUN ./mvnw dependency:go-offline
 COPY src ./src
-CMD ["./mvnw", "spring-boot:run"]
+RUN ./mvnw clean package -DskipTests
+
+# Step 2: Run the compiled jar
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
