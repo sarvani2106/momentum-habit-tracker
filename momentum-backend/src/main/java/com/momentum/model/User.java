@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,12 @@ public class User {
     private String username;
     private String email;
     private String password;
+    
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int xp = 0;
+
+    @Column(nullable = false, columnDefinition = "integer default 1")
+    private int level = 1;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore 
@@ -42,6 +49,10 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public int getXp() { return xp; }
+    public void setXp(int xp) { this.xp = xp; }
+    public int getLevel() { return level; }
+    public void setLevel(int level) { this.level = level; }
     public List<Habit> getHabits() { return habits; }
     public void setHabits(List<Habit> habits) { this.habits = habits; }
     public List<HabitRecord> getHabitRecords() { return habitRecords; }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchAuth } from '../utils/api';
 
 export default function ContributionCalendar({ userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -6,10 +7,9 @@ export default function ContributionCalendar({ userId }) {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8080/api/habit-records/activity/${userId}`)
-        .then(r => r.json())
-        .then(setActivityData)
-        .catch(err => console.error("Error fetching activity:", err));
+      fetchAuth(`/api/habit-logs/activity/${userId}`)
+        .then(data => setActivityData(data))
+        .catch(err => console.error("Failed to fetch activity data", err));
     }
   }, [userId]);
 

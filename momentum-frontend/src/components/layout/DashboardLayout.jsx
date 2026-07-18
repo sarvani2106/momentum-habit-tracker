@@ -1,18 +1,29 @@
-// src/components/layout/DashboardLayout.jsx
+import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar'; // We will create this next
-import Navbar from '../Navbar';
+import Sidebar from './Sidebar'; 
+import AnimatedBackground from './AnimatedBackground';
+import { useUser } from '../../context/UserContext';
 
-export default function DashboardLayout({ user, onLogout }) {
+const DashboardLayout = () => {
+  const { setUser } = useUser();
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   return (
-    <div className="flex h-screen bg-[#fafafa] dark:bg-[#050505] transition-colors duration-500">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-y-auto">
-        <Navbar loggedInUser={user} onLogout={onLogout} />
-        <main className="flex-1 max-w-7xl mx-auto w-full p-6 lg:p-8">
-          <Outlet /> {/* This renders the current page content */}
+    <div className="min-h-screen font-sans relative">
+      <AnimatedBackground />
+      
+      <div className="flex">
+        <Sidebar onLogout={handleLogout} />
+        
+        {/* Main Content Area */}
+        <main className="flex-1 pb-20 md:pb-8 pt-8 px-4 md:px-8 max-w-6xl mx-auto relative z-10">
+          <Outlet />
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default DashboardLayout;
