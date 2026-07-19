@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import RewardPopup from '../components/RewardPopup';
 import HabitCard from '../components/HabitCard';
+import HabitsHeader from '../components/habits/HabitsHeader';
+import HabitsCategoryFilters, { HABIT_CATEGORIES } from '../components/habits/HabitsCategoryFilters';
+import HabitsSidebar from '../components/habits/HabitsSidebar';
 import { useUser } from '../context/UserContext';
 import { fetchAuth } from '../utils/api';
-
-const CATEGORIES = {
-  Study: { icon: '📚', color: 'text-blue-500 bg-blue-50 border-blue-100' },
-  Fitness: { icon: '💪', color: 'text-emerald-500 bg-emerald-50 border-emerald-100' },
-  Health: { icon: '🥗', color: 'text-cyan-500 bg-cyan-50 border-cyan-100' },
-  Personal: { icon: '✨', color: 'text-purple-500 bg-purple-50 border-purple-100' },
-  Work: { icon: '💼', color: 'text-slate-500 bg-slate-100 border-slate-200' },
-  Finance: { icon: '💰', color: 'text-orange-500 bg-orange-50 border-orange-100' },
-  Custom: { icon: '📌', color: 'text-pink-500 bg-pink-50 border-pink-100' }
-};
 
 export default function Habits() {
   const { user, setUser } = useUser();
@@ -26,6 +19,7 @@ export default function Habits() {
   const [completedHabits, setCompletedHabits] = useState([]);
   const [rewardMessage, setRewardMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [habitToDelete, setHabitToDelete] = useState(null);
 
   useEffect(() => {
     fetchAuth(`/api/habit-records/user/${userId}`)
@@ -76,121 +70,164 @@ export default function Habits() {
       });
   };
 
+  const confirmDelete = () => {
+    if (!habitToDelete) return;
+    
+    fetchAuth(`/api/habit-records/${habitToDelete.id}`, {
+      method: 'DELETE'
+    })
+      .then(() => {
+        setHabits(habits.filter(h => h.id !== habitToDelete.id));
+        setHabitToDelete(null);
+      })
+      .catch(err => alert("Failed to delete habit: " + err.message));
+  };
+
   const filteredHabits = filterCategory === 'All' ? habits : habits.filter(h => (h.category || 'Custom') === filterCategory);
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-5xl mx-auto space-y-8"
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="max-w-7xl mx-auto"
     >
       <RewardPopup message={rewardMessage} />
       
-      <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-2">
-        <div>
-          <h1 className="text-4xl font-bold text-[var(--color-text-main)] tracking-tight mb-2">My Habits</h1>
-          <p className="text-[var(--color-text-muted)]">Manage and track your daily routines.</p>
-        </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-2xl font-medium transition-all duration-300 items-center justify-center gap-2 shadow-[0_4px_14px_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)]"
-        >
-          <Plus size={20} />
-          New Habit
-        </button>
-      </div>
+      <div className="flex flex-col lg:flex-row gap-8">
+        
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <HabitsHeader onNewHabit={() => setIsModalOpen(true)} />
+          
+          <div className="mt-8">
+            <HabitsCategoryFilters activeCategory={filterCategory} onSelectCategory={setFilterCategory} />
 
-      <div className="soft-card p-6 md:p-8">
-        {/* Filters */}
-        <div className="flex overflow-x-auto pb-4 mb-6 hide-scrollbar gap-2 border-b border-[var(--color-border)]">
-          <button 
-            onClick={() => setFilterCategory('All')} 
-            className={`px-5 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap border shadow-sm
-              ${filterCategory === 'All' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'bg-white text-[var(--color-text-muted)] border-slate-200 hover:bg-slate-50'}
-            `}
-          >
-            All
-          </button>
-          {Object.keys(CATEGORIES).map(cat => (
-            <button 
-              key={cat} 
-              onClick={() => setFilterCategory(cat)} 
-              className={`px-5 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap border shadow-sm
-                ${filterCategory === cat ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'bg-white text-[var(--color-text-muted)] border-slate-200 hover:bg-slate-50'}
-              `}
-            >
-              <span>{CATEGORIES[cat].icon}</span> {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Habit List */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {filteredHabits.length === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="col-span-full text-center py-16 text-[var(--color-text-muted)] bg-slate-50 rounded-3xl border-dashed border-2 border-slate-200"
-              >
-                No habits found. Add one to build momentum!
+            <div className="mt-6">
+              <motion.div layout className="flex flex-col gap-4">
+                <AnimatePresence>
+                  {filteredHabits.length === 0 ? (
+                    <motion.div 
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="col-span-full flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm"
+                    >
+                      <div className="text-4xl mb-4 opacity-70">🌱</div>
+                      <h3 className="text-lg font-semibold text-slate-800">Start your first habit.</h3>
+                      <p className="text-slate-500 text-sm mt-1 max-w-xs">Small actions create big momentum.</p>
+                      <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="mt-6 bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-sm"
+                      >
+                        + Create Habit
+                      </button>
+                    </motion.div>
+                  ) : (
+                    filteredHabits.map((habit, idx) => (
+                      <HabitCard 
+                        key={habit.id}
+                        habit={habit}
+                        isCompleted={completedHabits.includes(habit.id) || habit.completedToday}
+                        onCheckOff={handleCheckOff}
+                        onDelete={setHabitToDelete}
+                        catConfig={HABIT_CATEGORIES[habit.category] || HABIT_CATEGORIES.Custom}
+                        delay={idx * 0.05}
+                      />
+                    ))
+                  )}
+                </AnimatePresence>
               </motion.div>
-            ) : (
-              filteredHabits.map(habit => (
-                <HabitCard 
-                  key={habit.id}
-                  habit={habit}
-                  isCompleted={completedHabits.includes(habit.id) || habit.completedToday}
-                  onCheckOff={handleCheckOff}
-                  catConfig={CATEGORIES[habit.category] || CATEGORIES.Custom}
-                />
-              ))
-            )}
-          </AnimatePresence>
-        </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="w-full lg:w-[320px] flex-shrink-0">
+          <HabitsSidebar habits={habits} completedHabits={completedHabits} />
+        </div>
+
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {habitToDelete && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-2xl w-full max-w-sm relative overflow-hidden text-center"
+            >
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash2 size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-2">Delete Habit?</h2>
+              <p className="text-slate-500 text-sm mb-8">
+                Are you sure you want to delete <span className="font-semibold text-slate-700">"{habitToDelete.name}"</span>? This action cannot be undone.
+              </p>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setHabitToDelete(null)}
+                  className="flex-1 py-3.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-medium rounded-2xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmDelete}
+                  className="flex-1 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-2xl transition-colors"
+                >
+                  Delete Habit
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Quick Add Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-full max-w-md relative overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-2xl w-full max-w-md relative overflow-hidden"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-[var(--color-text-main)]">New Habit</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-[var(--color-text-muted)] hover:text-slate-800 transition-colors">
-                  <X size={24} />
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-bold text-slate-800 tracking-tight">New Habit</h2>
+                <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-800 transition-colors bg-slate-50 p-2 rounded-full">
+                  <X size={20} />
                 </button>
               </div>
-              <form onSubmit={handleAddHabit} className="flex flex-col gap-5">
+              <form onSubmit={handleAddHabit} className="flex flex-col gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-text-main)] mb-2">Habit Name</label>
+                  <label className="block text-sm font-semibold text-slate-600 mb-2">Habit Name</label>
                   <input 
                     type="text" 
-                    placeholder="e.g. Meditate for 10 min" 
+                    placeholder="e.g. Read 10 pages" 
                     value={newHabitName} 
                     onChange={(e) => setNewHabitName(e.target.value)} 
                     required 
-                    className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:bg-white text-[var(--color-text-main)] transition-all placeholder:text-slate-400" 
+                    className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-800 transition-all placeholder:text-slate-400" 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-text-main)] mb-2">Category</label>
+                  <label className="block text-sm font-semibold text-slate-600 mb-2">Category</label>
                   <select 
                     value={newHabitCategory} 
                     onChange={(e) => setNewHabitCategory(e.target.value)} 
-                    className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm cursor-pointer text-[var(--color-text-main)] appearance-none focus:outline-none focus:border-indigo-500"
+                    className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-base cursor-pointer text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   >
-                    {Object.keys(CATEGORIES).map(cat => <option key={cat} value={cat} className="bg-white text-slate-800">{CATEGORIES[cat].icon} {cat}</option>)}
+                    {Object.keys(HABIT_CATEGORIES).filter(c => c !== 'All').map(cat => <option key={cat} value={cat} className="bg-white text-slate-800">{HABIT_CATEGORIES[cat].icon} {cat}</option>)}
                   </select>
                 </div>
-                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-md mt-2">
+                <button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/20 mt-4 text-lg">
                   Create Habit
                 </button>
               </form>

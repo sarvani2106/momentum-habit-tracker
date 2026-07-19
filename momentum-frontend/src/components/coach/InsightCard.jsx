@@ -63,9 +63,6 @@ export default function InsightCard({ coachData, isLoading, onRefresh }) {
                 <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide mb-1">Suggested Habit</h3>
                 <p className="text-green-900">{coachData.suggestedHabit}</p>
               </div>
-              <button className="px-4 py-2 bg-white text-green-700 rounded-xl font-bold text-sm shadow-sm hover:shadow transition-shadow">
-                Add Habit
-              </button>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { fetchAuth } from '../utils/api';
 import { useUser } from '../context/UserContext';
 
@@ -72,11 +72,6 @@ export default function MomentumInsightCard() {
             "{insight}"
           </p>
         )}
-        
-        <button className="flex items-center gap-1 text-amber-600 font-bold hover:text-amber-700 transition-colors mx-auto md:mx-0 group text-sm">
-          View All Insights 
-          <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </button>
       </div>
     </motion.div>
   );

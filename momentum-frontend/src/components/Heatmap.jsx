@@ -149,7 +149,7 @@ export default function Heatmap() {
                     day ? (
                       <div 
                         key={day.dateStr}
-                        className={`w-4 h-4 rounded-[4px] transition-all duration-300 hover:scale-125 cursor-pointer relative group ${getColorClass(day.count)}`}
+                        className={`w-4 h-4 rounded-[4px] transition-all duration-300 hover:scale-125 hover:z-50 cursor-pointer relative group ${getColorClass(day.count)}`}
                       >
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-semibold text-white shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
                           {day.count} {day.count === 1 ? 'habit' : 'habits'} on {day.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}

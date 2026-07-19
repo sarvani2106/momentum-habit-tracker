@@ -172,6 +172,7 @@ export default function Dashboard() {
                       habit={habit}
                       isCompleted={completedHabits.includes(habit.id) || habit.completedToday}
                       onCheckOff={handleCheckOff}
+                      onDelete={() => {}}
                       catConfig={CATEGORIES[habit.category] || CATEGORIES.Custom}
                     />
                   ))

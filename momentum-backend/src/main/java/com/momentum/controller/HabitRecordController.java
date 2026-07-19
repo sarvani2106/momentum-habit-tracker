@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -189,8 +190,26 @@ public class HabitRecordController {
         return ResponseEntity.ok(res);
     }
 
+    @DeleteMapping("/{habitId}")
+    public ResponseEntity<?> deleteHabit(@PathVariable Long habitId) {
+        Optional<HabitRecord> optionalRecord = habitRecordRepository.findById(habitId);
+        if (optionalRecord.isEmpty()) {
+            return ResponseEntity.badRequest().body("Error: Habit not found.");
+        }
+        
+        // Delete all associated logs first to avoid foreign key constraint violations
+        List<HabitLog> logs = habitLogRepository.findByHabitRecordIdOrderByCompletionDateDesc(habitId);
+        habitLogRepository.deleteAll(logs);
+        
+        // Delete the habit
+        habitRecordRepository.delete(optionalRecord.get());
+        
+        return ResponseEntity.ok().body("{\"success\":true}");
+    }
+
     @GetMapping("/activity/{userId}")
     public ResponseEntity<?> getUserActivity(@PathVariable Long userId) {
         return ResponseEntity.ok(activityLogRepository.findByUserId(userId));
     }
 }
+// Trigger rebuild

@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, Flame, Bot, BarChart3, Settings, LogOut, Sparkles } from 'lucide-react';
+import { Home, Flame, Bot, BarChart3, Settings, LogOut, Sparkles, X } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 
-export default function Sidebar({ onLogout }) {
+export default function Sidebar({ onLogout, mobileMenuOpen, setMobileMenuOpen }) {
   const { user } = useUser();
 
   const navItems = [
@@ -16,14 +16,29 @@ export default function Sidebar({ onLogout }) {
   ];
 
   return (
-    <div className="hidden md:flex flex-col w-64 h-screen sticky top-0 p-6 bg-[var(--color-bg-main)] border-r border-[var(--color-border)] z-40">
+    <div className={`
+      fixed inset-y-0 left-0 z-50 w-72 bg-[var(--color-bg-main)] border-r border-[var(--color-border)] 
+      transform transition-transform duration-300 ease-in-out flex flex-col p-6 h-[100dvh]
+      md:translate-x-0 md:sticky md:top-0 md:w-64 md:z-40
+      ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
+    `}>
       
-      {/* Brand */}
-      <div className="flex items-center gap-3 mb-12 mt-2 px-2">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-sm" />
-        <span className="font-bold tracking-tight text-xl text-[var(--color-text-main)]">
-          Momentum
-        </span>
+      {/* Brand & Mobile Close */}
+      <div className="flex items-center justify-between mb-12 mt-2 px-2">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-sm hidden md:block" />
+          <span className="font-bold tracking-tight text-xl text-[var(--color-text-main)] hidden md:block">
+            Momentum
+          </span>
+        </div>
+        
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setMobileMenuOpen(false)}
+          className="md:hidden p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors ml-auto -mr-2 -mt-2"
+        >
+          <X size={24} />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -36,6 +51,9 @@ export default function Sidebar({ onLogout }) {
               key={item.id}
               to={item.path}
               end={item.path === '/'}
+              onClick={() => {
+                if (setMobileMenuOpen) setMobileMenuOpen(false);
+              }}
               className={({ isActive }) => `
                 w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 relative group
                 ${isActive ? 'text-indigo-600 font-semibold' : 'text-slate-500 hover:text-indigo-500 hover:bg-slate-100/50'}
