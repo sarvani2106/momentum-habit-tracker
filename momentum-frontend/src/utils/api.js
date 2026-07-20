@@ -7,7 +7,7 @@ export const fetchAuth = async (url, options = {}) => {
     ...options.headers,
   };
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  baseURL: import.meta.env.VITE_API_URL
   const response = await fetch(`${API_URL}${url}`, {
     ...options,
     headers,
