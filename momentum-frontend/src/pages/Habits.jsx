@@ -94,54 +94,55 @@ export default function Habits() {
     >
       <RewardPopup message={rewardMessage} />
       
-      <div className="flex flex-col lg:flex-row gap-8">
-        
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <HabitsHeader onNewHabit={() => setIsModalOpen(true)} />
-          
-          <div className="mt-8">
-            <HabitsCategoryFilters activeCategory={filterCategory} onSelectCategory={setFilterCategory} />
+      {/* Full-width Header */}
+      <HabitsHeader onNewHabit={() => setIsModalOpen(true)} />
+      
+      {/* Full-width Category Filters */}
+      <div className="mt-8">
+        <HabitsCategoryFilters activeCategory={filterCategory} onSelectCategory={setFilterCategory} />
+      </div>
 
-            <div className="mt-6">
-              <motion.div layout className="flex flex-col gap-4">
-                <AnimatePresence>
-                  {filteredHabits.length === 0 ? (
-                    <motion.div 
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="col-span-full flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm"
-                    >
-                      <div className="text-4xl mb-4 opacity-70">🌱</div>
-                      <h3 className="text-lg font-semibold text-slate-800">Start your first habit.</h3>
-                      <p className="text-slate-500 text-sm mt-1 max-w-xs">Small actions create big momentum.</p>
-                      <button 
-                        onClick={() => setIsModalOpen(true)}
-                        className="mt-6 bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-sm"
-                      >
-                        + Create Habit
-                      </button>
-                    </motion.div>
-                  ) : (
-                    filteredHabits.map((habit, idx) => (
-                      <HabitCard 
-                        key={habit.id}
-                        habit={habit}
-                        isCompleted={completedHabits.includes(habit.id) || habit.completedToday}
-                        onCheckOff={handleCheckOff}
-                        onDelete={setHabitToDelete}
-                        catConfig={HABIT_CATEGORIES[habit.category] || HABIT_CATEGORIES.Custom}
-                        delay={idx * 0.05}
-                      />
-                    ))
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          </div>
+      {/* Habits List + Sidebar */}
+      <div className="flex flex-col lg:flex-row gap-8 mt-6">
+        
+        {/* Main Content Area - Habit Cards */}
+        <div className="flex-1 min-w-0">
+          <motion.div layout className="flex flex-col gap-4">
+            <AnimatePresence>
+              {filteredHabits.length === 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="col-span-full flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm"
+                >
+                  <div className="text-4xl mb-4 opacity-70">🌱</div>
+                  <h3 className="text-lg font-semibold text-slate-800">Start your first habit.</h3>
+                  <p className="text-slate-500 text-sm mt-1 max-w-xs">Small actions create big momentum.</p>
+                  <button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="mt-6 bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-sm"
+                  >
+                    + Create Habit
+                  </button>
+                </motion.div>
+              ) : (
+                filteredHabits.map((habit, idx) => (
+                  <HabitCard 
+                    key={habit.id}
+                    habit={habit}
+                    isCompleted={completedHabits.includes(habit.id) || habit.completedToday}
+                    onCheckOff={handleCheckOff}
+                    onDelete={setHabitToDelete}
+                    catConfig={HABIT_CATEGORIES[habit.category] || HABIT_CATEGORIES.Custom}
+                    delay={idx * 0.05}
+                  />
+                ))
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-full lg:w-[320px] flex-shrink-0">
+        <div className="w-full lg:w-[300px] flex-shrink-0">
           <HabitsSidebar habits={habits} completedHabits={completedHabits} />
         </div>
 
