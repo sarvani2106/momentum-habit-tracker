@@ -156,7 +156,7 @@ export default function Dashboard() {
               <h2 className="text-xl font-bold text-[var(--color-text-main)] tracking-tight">Today's Focus</h2>
             </div>
 
-            <motion.div layout className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AnimatePresence>
                 {habits.length === 0 ? (
                   <motion.div 

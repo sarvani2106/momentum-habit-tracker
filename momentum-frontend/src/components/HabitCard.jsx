@@ -84,56 +84,60 @@ export default function HabitCard({ habit, isCompleted, onCheckOff, onDelete, ca
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ delay, duration: 0.4, ease: "easeOut" }}
         whileHover={{ y: -2 }}
-        className={`relative p-4 md:p-5 rounded-[2rem] bg-white transition-all duration-500 flex items-center gap-3 md:gap-4 group border-b border-slate-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]
+        className={`relative p-5 rounded-[2rem] bg-white transition-all duration-500 group border border-slate-100/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]
           ${isCompleted ? 'opacity-60' : ''}
         `}
       >
-        <div className={`w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-2xl flex items-center justify-center text-xl md:text-2xl bg-slate-50 text-slate-800 transition-colors ${isCompleted ? 'bg-transparent grayscale' : 'group-hover:bg-indigo-50'}`}>
-          {icon}
-        </div>
-        
-        <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <div className="pr-10">
-            <h3 className={`font-bold text-base md:text-lg transition-colors duration-500 ${isCompleted ? 'text-slate-400 line-through' : 'text-slate-800'} break-words leading-tight`}>
+        {/* Top Row: Icon + Title + Kebab */}
+        <div className="flex items-start gap-3 mb-3">
+          <div className={`w-11 h-11 flex-shrink-0 rounded-xl flex items-center justify-center text-lg bg-slate-50 text-slate-800 transition-colors ${isCompleted ? 'bg-transparent grayscale' : 'group-hover:bg-indigo-50'}`}>
+            {icon}
+          </div>
+          
+          <div className="flex-1 min-w-0 pt-0.5">
+            <h3 className={`font-bold text-[15px] leading-snug transition-colors duration-500 ${isCompleted ? 'text-slate-400 line-through' : 'text-slate-800'} truncate`}>
               {habit.name}
             </h3>
           </div>
-          
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-            <div className="flex items-center text-xs md:text-sm font-medium text-slate-500 whitespace-nowrap">
-              <Calendar size={14} className="mr-1.5 opacity-70" />
+
+          {/* Kebab Menu */}
+          <div className="flex-shrink-0">
+            <button 
+              ref={buttonRef}
+              onClick={toggleMenu}
+              className="p-1 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              <MoreVertical size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Row: Meta + Check Button */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex items-center text-xs font-medium text-slate-400 whitespace-nowrap">
+              <Calendar size={13} className="mr-1 opacity-70" />
               Every day
             </div>
             {(habit.currentStreak > 0 || isCompleted) && (
-              <div className="flex items-center text-xs md:text-sm font-semibold text-orange-500 whitespace-nowrap">
-                <Flame size={14} className="mr-1.5 opacity-90" />
+              <div className="flex items-center text-xs font-semibold text-orange-500 whitespace-nowrap">
+                <Flame size={13} className="mr-1 opacity-90" />
                 {habit.currentStreak || 0} day streak
               </div>
             )}
           </div>
-        </div>
 
-        {/* Kebab Menu */}
-        <div className="flex-shrink-0 self-start -mt-1">
-          <button 
-            ref={buttonRef}
-            onClick={toggleMenu}
-            className="p-1 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-colors"
-          >
-            <MoreVertical size={20} />
-          </button>
-        </div>
-
-        {/* Check Button - Right Aligned */}
-        <div className="flex-shrink-0 flex items-center justify-center self-center" onClick={() => !isCompleted && onCheckOff(habit.id, habit.name)}>
-          <motion.div 
-            className={`flex items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-300 border-[2.5px]
-              ${isCompleted ? 'bg-green-500 border-green-500 text-white shadow-sm shadow-green-500/20' : 'bg-transparent border-slate-200 text-transparent hover:border-slate-300 hover:bg-slate-50'}
-            `}
-            whileTap={!isCompleted ? { scale: 0.9 } : {}}
-          >
-            <Check size={24} strokeWidth={3} className={isCompleted ? 'opacity-100' : 'opacity-0'} />
-          </motion.div>
+          {/* Check Button */}
+          <div className="flex-shrink-0" onClick={() => !isCompleted && onCheckOff(habit.id, habit.name)}>
+            <motion.div 
+              className={`flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-all duration-300 border-[2.5px]
+                ${isCompleted ? 'bg-green-500 border-green-500 text-white shadow-sm shadow-green-500/20' : 'bg-transparent border-slate-200 text-transparent hover:border-slate-300 hover:bg-slate-50'}
+              `}
+              whileTap={!isCompleted ? { scale: 0.9 } : {}}
+            >
+              <Check size={20} strokeWidth={3} className={isCompleted ? 'opacity-100' : 'opacity-0'} />
+            </motion.div>
+          </div>
         </div>
         
         {/* Gentle Celebration overlay */}
