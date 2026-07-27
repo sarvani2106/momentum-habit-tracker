@@ -147,16 +147,16 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         
         {/* Left Column (Habits Preview) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-0">
           <motion.div variants={item} className="soft-card p-6 flex-1">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-[var(--color-text-main)] tracking-tight">Today's Focus</h2>
             </div>
 
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <motion.div layout className="flex flex-col gap-3">
               <AnimatePresence>
                 {habits.length === 0 ? (
                   <motion.div 
@@ -183,7 +183,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right Column (AI Coach Preview) */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
+        <div className="flex flex-col gap-6">
           <motion.div variants={item} className="h-full">
             <HeroSection />
           </motion.div>
